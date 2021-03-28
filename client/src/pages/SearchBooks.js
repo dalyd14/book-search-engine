@@ -68,7 +68,6 @@ const SearchBooks = () => {
     }
 
     try {
-      console.log(bookToSave)
       await addBook({
         variables: bookToSave
       })

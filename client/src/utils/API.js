@@ -68,6 +68,10 @@ export const DELETE_BOOK = gql`
     removeBook(bookId: $bookId) {
       savedBooks {
         bookId
+        image
+        title
+        authors
+        description
       }
     }
   }

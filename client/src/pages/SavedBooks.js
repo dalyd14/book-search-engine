@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Jumbotron, Container, CardColumns, Card, Button } from 'react-bootstrap';
 import { useQuery, useMutation } from '@apollo/react-hooks'
 
@@ -7,12 +7,25 @@ import Auth from '../utils/auth';
 import { removeBookId } from '../utils/localStorage';
 
 const SavedBooks = () => {
-  const [userData, setUserData] = useState({});
-  const [deleteBook, { error }] = useMutation(DELETE_BOOK)
-
   const { loading, data } = useQuery(QUERY_ME)
-
-  setUserData(data?.me);
+  
+  console.log("here", data?.me)
+  
+  const [deleteBook, { error }] = useMutation(DELETE_BOOK, {
+    update(cache, { data: { removeBook }}) {
+      const { me } = cache.readQuery({ query: QUERY_ME })
+      console.log("after read query:", me)
+      console.log("after read query (RemoveBook):", removeBook)
+      cache.writeQuery({
+        query: QUERY_ME,
+        data: { me: { 
+          ...me,
+          bookCount: me.bookCount - 1, 
+          savedBooks: removeBook.savedBooks
+        }}
+      })
+    }
+  })
 
   // create function that accepts the book's mongo _id value as param and deletes the book from the database
   const handleDeleteBook = async (bookId) => {
@@ -24,11 +37,10 @@ const SavedBooks = () => {
 
     try {
 
-      const { data } = await deleteBook({
+      await deleteBook({
         variables: { bookId }
       })
 
-      setUserData(data.removeBook);
       // upon success, remove book's id from localStorage
       removeBookId(bookId);
     } catch (err) {
@@ -40,6 +52,8 @@ const SavedBooks = () => {
   if (loading) {
     return <h2>LOADING...</h2>;
   }
+
+  const userData = data?.me
 
   return (
     <>
@@ -66,6 +80,7 @@ const SavedBooks = () => {
                   <Button className='btn-block btn-danger' onClick={() => handleDeleteBook(book.bookId)}>
                     Delete this Book!
                   </Button>
+                  {error ? <p className="text-danger">Something went wrong...</p> : ''}
                 </Card.Body>
               </Card>
             );

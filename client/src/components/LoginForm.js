@@ -87,6 +87,7 @@ const LoginForm = () => {
           variant='success'>
           Submit
         </Button>
+        {error ? <p className="text-danger">Something went wrong...</p> : ''}
       </Form>
     </>
   );

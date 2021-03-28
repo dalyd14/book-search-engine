@@ -138,6 +138,7 @@ const SearchBooks = () => {
                   <p className='small'>Authors: {book.authors}</p>
                   <Card.Text>{book.description}</Card.Text>
                   {Auth.loggedIn() && (
+                    <>
                     <Button
                       disabled={savedBookIds?.some((savedBookId) => savedBookId === book.bookId)}
                       className='btn-block btn-info'
@@ -146,6 +147,8 @@ const SearchBooks = () => {
                         ? 'This book has already been saved!'
                         : 'Save this Book!'}
                     </Button>
+                    {error ? <p className="text-danger">Something went wrong...</p> : ''}
+                    </>
                   )}
                 </Card.Body>
               </Card>

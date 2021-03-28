@@ -14,13 +14,12 @@ const SavedBooks = () => {
   const [deleteBook, { error }] = useMutation(DELETE_BOOK, {
     update(cache, { data: { removeBook }}) {
       const { me } = cache.readQuery({ query: QUERY_ME })
-      console.log("after read query:", me)
-      console.log("after read query (RemoveBook):", removeBook)
+
       cache.writeQuery({
         query: QUERY_ME,
         data: { me: { 
           ...me,
-          bookCount: me.bookCount - 1, 
+          bookCount: removeBook.bookCount, 
           savedBooks: removeBook.savedBooks
         }}
       })
